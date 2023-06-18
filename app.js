@@ -1,33 +1,63 @@
 const express = require('express');
-const route = require('./src/routes/api');
+const router = require("./src/routes/api");
 const app = new express();
+require('dotenv').config({ path: "./config.env" });
+
+
 
 
 // All middlewares
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
-const bodyParser = require('body-parser');
+const bodyParser = require("body-parser")
 const mongoose = require('mongoose')
 
-// Security Middlewares
-const helmet = require('helmet');
-const hpp = require('hpp');
-const rateLimiter = require('express-rate-limit');
+// Security Middleware import
+const rateLimit = require("express-rate-limit");
+const helmet = require("helmet");
 const mongoSanitize = require('express-mongo-sanitize');
+const xssClean = require('xss-clean');
+const hpp = require('hpp');
 
-// Implement all  Middlewares
-app.use(express.json({ limit: "50mb" }));
-app.use(express.urlencoded({ extended: false }))
-app.use(cookieParser)
-app.use(cors())
-app.use(bodyParser.json());
-app.use(helmet())
-app.use(mongoSanitize())
+// All Middlewares use
+app.use(express.static('public'))
+app.use(bodyParser.json())
 
-// http Limiter
-const limiter = rateLimiter({ windowms: 15 * 60 * 1000, max: 100 })
-app.use(limiter);
+// Security Middlewares use
+app.use(cors());
+app.use(helmet());
+app.use(mongoSanitize());
+app.use(xssClean());
+app.use(hpp());
 
+// Request rate Limiting
+const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
+});
+app.use(limiter)
 
-app.use(route)
+// Database Connection Mongoose
+const dbUri = process.env.DB_URI;
+const dbConnectOptions = {
+    user: "",
+    pass: "",
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+}
+
+mongoose.connect(dbUri, dbConnectOptions)
+    .then(()=> {
+        console.log("Database Connected")
+    })
+    .catch((err) => {
+        console.log(`Database connection failed, err: ${err}`)
+    });
+
+app.use('/api/v1', router);
+
+app.use("*", (req, res) => {
+    res.status(404).json({msg: "Page not founded"})
+});
+
 module.exports = app;
