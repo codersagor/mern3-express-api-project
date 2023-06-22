@@ -13,6 +13,6 @@ const UsersSchema = mongoose.Schema(
         versionKey: false
     });
 
-const UsersModel = mongoose.model('tasks', UsersSchema);
+const UsersModel = mongoose.model('users', UsersSchema);
 
 module.exports = UsersModel;
