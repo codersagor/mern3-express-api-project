@@ -1,9 +1,9 @@
-const mongoose = require('mongoose');
+ const mongoose = require('mongoose');
 
 const OTPschema = mongoose.Schema(
     {
         email: String,
-        otp: { type: String },
+        otpcode: { type: String },
         status: { type: Number, default: 0 },
     }
 , {

@@ -1,6 +1,8 @@
 const userModel = require('../models/userModel');
+const OTPmodel = require('../models/OTPmodel')
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt")
+const SendEmailUtility = require("../utility/sendEmailUtility");
 
 exports.registration = async (req, res, next) => {
     try {
@@ -45,6 +47,24 @@ exports.login = async (req, res) => {
         res.status(500).json({ msg: 'Login failed', error: error.message });
     }
 };
+
+// send otp
+
+exports.sendOtp = async (req, res, next) => {
+    let email = req.headers.email;
+    let OtpCode = Math.floor(Math.random() * 900000) + 100000;
+
+
+    try {
+        let results = await OTPmodel.create({ otpcode: OtpCode, email: email }); // Database Insert
+        console.log(OtpCode)
+        res.status(200).json({ status: "success", msg: results });
+    } catch (err) {
+        res.status(200).json({ msg: "Otp create Failed" });
+    }
+};
+
+
 
 // Get User profile ---- After Login
 exports.profileDetails = async  (req, res, next) => {

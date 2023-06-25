@@ -1,18 +1,16 @@
 const nodemailer= require('nodemailer');
 const SendEmailUtility=async (EmailTo,EmailText,EmailSubject)=>{
-    let transporter = nodemailer.createTransport({
-        host: 'mail.teamrabbil.com',
-        port: 25,
-        secure: false,
-        auth: {
-            user: "info@teamrabbil.com",
-            pass: '~sR4[bhaC[Qs'
-        },tls: {
-            rejectUnauthorized: false
-        },
-    });
+    // Gmail SMTP configuration
+        const transporter = nodemailer.createTransport({
+            service: 'Gmail',
+            auth: {
+                user: 'zxstudio.official@gmail.com',
+                pass: 'ewbgbgliuvdwglsl',
+            },
+        });
+
     let mailOption={
-        from:'Task Manager MERN3<info@teamrabbil.com>',
+        from:'Task Manager MERN3<zxstudio.official@gmail.com>',
         to:EmailTo,
         subject:EmailSubject,
         text:EmailText
