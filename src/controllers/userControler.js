@@ -49,18 +49,45 @@ exports.login = async (req, res) => {
 };
 
 // send otp
-
 exports.sendOtp = async (req, res, next) => {
-    let email = req.headers.email;
-    let OtpCode = Math.floor(Math.random() * 900000) + 100000;
-
-
     try {
+        let { email } = req.headers;
+        let OtpCode = Math.floor(Math.random() * 900000) + 100000;
+
         let results = await OTPmodel.create({ otpcode: OtpCode, email: email }); // Database Insert
         console.log(OtpCode)
         res.status(200).json({ status: "success", msg: results });
+        SendEmailUtility(email, `your otp code is: ${OtpCode}`, "Email Verify")
     } catch (err) {
         res.status(200).json({ msg: "Otp create Failed" });
+    }
+};
+
+// Verify Otp
+exports.verifyOtp = async (req, res, next) => {
+    try {
+        const { email, otpcode } = req.params;
+
+        // Input validation (example: check if email and otpcode are present)
+        if (!email || !otpcode) {
+            return res.status(400).json({ status: "failed", msg: "Invalid input" });
+        }
+
+        const existingOtp = await OTPmodel.findOne({ email, otpcode });
+
+        if (existingOtp) {
+            if (existingOtp.status === 0) {
+                await OTPmodel.findOneAndUpdate({ email, otpcode }, { status: 1 });
+                return res.status(200).json({ status: "Success", msg: "OTP Verified" });
+            } else {
+                return res.status(200).json({ status: "failed", msg: "OTP already used" });
+            }
+        } else {
+            return res.status(200).json({ status: "failed", msg: "Wrong OTP" });
+        }
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ status: "failed", msg: "Internal server error" });
     }
 };
 

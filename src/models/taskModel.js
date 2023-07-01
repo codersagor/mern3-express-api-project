@@ -5,7 +5,11 @@ const TaskSchema = mongoose.Schema(
         email: String,
         title: String,
         description: String,
-        status: String,
+        status: {
+            type: String,
+            enum: ['completed', 'canceled', 'inprogress'],
+            default: "inprogress"
+        }
 
     }
     , {

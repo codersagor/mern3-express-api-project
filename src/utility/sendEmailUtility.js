@@ -2,10 +2,10 @@ const nodemailer= require('nodemailer');
 const SendEmailUtility=async (EmailTo,EmailText,EmailSubject)=>{
     // Gmail SMTP configuration
         const transporter = nodemailer.createTransport({
-            service: 'Gmail',
+            host: 'smtp.gmail.com',
             auth: {
                 user: 'zxstudio.official@gmail.com',
-                pass: 'ewbgbgliuvdwglsl',
+                pass: 'uvrbwlquokagrmdo',
             },
         });
 
