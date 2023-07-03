@@ -12,29 +12,38 @@ exports.newTask = async (req, res, next) => {
 }
 
 // Delete task -
-exports.deleteTasks = async (req, res, next)  => {
-    let { id } = req.params;
-    let query = {_id: id};
+exports.deleteTasks = async (req, res, next) => {
+     try {
+        let query = {_id: req.params.id}
 
-    try {
-        let results = await tasksModel.deleteOne(query);
-        res.status(204).json({status: "succeed", msg: "Task Deleted"})
-    } catch (err) {
-        res.status(200).json({status: "failed", msg: "Task Delete failed"})
-    }
+         let deleteResult = await tasksModel.deleteOne(query);
+        if(deleteResult.deletedCount === 0) {
+            res.status(200).json({status: "Failed", msg: "Task Not Found"});
+        } else {
+            res.status(200).json({status: "Succed", msg: "Task Deleted"});
+        }
+     } catch (err) {
+            res.status(200).json({ status: "failed", msg: "Task Deletion" +
+                    " failed, Internal server error", errorMsg: err })
+     }
 }
 
 // Update Task -
 exports.updateTask = async (req, res, next)  => {
     let reqbody = req.body;
-    let {id} = req.params;
-    let query = {_id: id};
 
     try {
-        let result = await tasksModel.updateOne(query, reqbody);
-        res.status(200).json({status: "succeed", msg: "Data succeed done"});
+        let result = await tasksModel.findByIdAndUpdate( req.params.id, reqbody, {new: true});
+        if(result === null) {
+            res.status(200).json({status: "Failed", msg: "Invalid id, Task" +
+                    " Dont found"});
+        } else  {
+            res.status(200).json({status: "success", msg:"Task Update" +
+                    " succeed", data: result})
+        }
     } catch (err) {
-        res.status(200).json({status: "failed", msg: "Data delete fail"});
+        res.status(200).json({status: "failed", msg: "task update failed," +
+                " Internal server problem"});
     }
 }
 
@@ -62,4 +71,3 @@ exports.getAllTask = async (req, res, next) => {
        })
    }
 }
-

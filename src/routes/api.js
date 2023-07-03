@@ -21,6 +21,8 @@ router.post('/newtask', authVerifyMiddleware, newTask)
 router.post('/updatetask/:id', authVerifyMiddleware, updateTask);
 // Delete Task
 router.delete('/deletetask/:id', authVerifyMiddleware, deleteTasks);
+// Update Task
+router.patch('/updatetask/:id', authVerifyMiddleware, updateTask)
 
 // Get task list by status
 router.get('/taskbyid/:status', taskbyid)
